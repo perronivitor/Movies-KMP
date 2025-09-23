@@ -16,30 +16,34 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import movies.composeapp.generated.resources.Res
 import movies.composeapp.generated.resources.minecraft_movie
+import org.example.project.domain.model.Movie
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MoviePoster(modifier: Modifier = Modifier) {
+fun MoviePoster(
+    movie: Movie,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = modifier
-            .width(140.dp)
+        modifier = modifier,
     ) {
         Card(
-            modifier = Modifier
+            modifier = modifier
                 .width(140.dp)
                 .height(210.dp),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
         ) {
             Image(
                 painter = painterResource(Res.drawable.minecraft_movie),
-                contentDescription = "Movie Poster",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize(),
             )
         }
 
         Text(
-            text = "Minecraft",
+            text = movie.title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium
