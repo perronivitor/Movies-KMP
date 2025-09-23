@@ -13,7 +13,7 @@ fun App() {
         val navController = rememberNavController()
         NavHost(navController, startDestination = AppRoutes.MoviesList) {
             composable<AppRoutes.MoviesList> {
-                // MoviesListRoute()
+                 MoviesListRoute()
             }
 
             composable<AppRoutes.MovieDetail> {
