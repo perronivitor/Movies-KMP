@@ -23,12 +23,10 @@ fun MoviePoster(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.width(180.dp),
     ) {
         Card(
-            modifier = modifier
-                .width(140.dp)
-                .height(210.dp),
+            modifier = modifier.height(220.dp),
             shape = RoundedCornerShape(12.dp),
         ) {
             AsyncImage(

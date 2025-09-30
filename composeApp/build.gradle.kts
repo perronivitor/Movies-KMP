@@ -51,7 +51,7 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.okhttp)
-
+            implementation(libs.coil.network.ktor3)
         }
 
         iosMain.dependencies {

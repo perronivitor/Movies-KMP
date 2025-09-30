@@ -1,74 +1,113 @@
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.example.project.data.network.IMAGE_SMALL_BASE_URL
-import org.example.project.data.network.KtorApiClient
-import org.example.project.domain.model.Movie
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import org.example.project.data.repository.MoviesRepository
+import org.example.project.domain.model.MovieSection
+import org.example.project.domain.model.MovieSection.SectionType.*
+import org.example.project.domain.model.movie1
 import org.example.project.ui.components.MoviesSection
+import org.example.project.ui.movies.MoviesListViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun MoviesListRoute() {
-
-    var popularMovies by remember {
-        mutableStateOf(emptyList<Movie>())
+fun MoviesListRoute(
+    viewModel: MoviesListViewModel = viewModel {
+        MoviesListViewModel(
+            moviesRepository = MoviesRepository()
+        )
     }
+) {
+    val moviesListState by viewModel.moviesListState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        val response = KtorApiClient.getMovies("popular")
-        popularMovies = response.results.map {
-            Movie(
-                id = it.id,
-                title = it.title,
-                overview = it.overview,
-                posterUrl = "$IMAGE_SMALL_BASE_URL${it.posterPath}",
-            )
-        }
-    }
 
-    MoviesListScreen(
-        popularMovies = popularMovies,
-    )
+    MoviesListScreen(moviesListState = moviesListState)
 }
 
 @Composable
 @Preview
 fun MoviesListScreen(
-    popularMovies: List<Movie>
+    moviesListState: MoviesListViewModel.MoviesListState,
 ) {
     Scaffold { padding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
-            item {
-                MoviesSection(
-                    title = "Popular Movies",
-                    movies = popularMovies
-                )
-            }
+            when (moviesListState) {
+                is MoviesListViewModel.MoviesListState.Success -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(32.dp)
+                    ) {
+                        items(moviesListState.movieSections) { movieSection ->
+                            when (movieSection.section) {
+                                POPULAR -> {
+                                    MoviesSection(
+                                        title = "Popular Movies",
+                                        movies = movieSection.movies
+                                    )
+                                }
+                                TOP_RATED -> {
+                                    MoviesSection(
+                                        title = "Top Rated Movies",
+                                        movies = movieSection.movies
+                                    )
+                                }
+                                UPCOMING -> {
+                                    MoviesSection(
+                                        title = "Upcoming Movies",
+                                        movies = movieSection.movies
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
 
-            item {
-                MoviesSection(
-                    title = "Top Rated Movies",
-                    movies = popularMovies
-                )
-            }
-
-            item {
-                MoviesSection(
-                    title = "Upcoming Movies",
-                    movies = popularMovies
-                )
+                is MoviesListViewModel.MoviesListState.Error -> {
+                    Text(
+                        text = moviesListState.message,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+                MoviesListViewModel.MoviesListState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    )
+                }
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MoviesListPreview() {
+    MoviesListScreen(
+        moviesListState = MoviesListViewModel.MoviesListState.Success(
+            movieSections = listOf(
+                MovieSection(
+                    section = POPULAR,
+                    movies = listOf(movie1)
+                )
+            )
+        )
+    )
 }
