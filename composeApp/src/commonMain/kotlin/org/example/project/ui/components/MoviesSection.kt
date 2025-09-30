@@ -5,13 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.example.project.domain.model.Movie
-import org.example.project.domain.model.movie1
 
 @Composable
 fun MoviesSection(
@@ -35,8 +35,8 @@ fun MoviesSection(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            items(10) {
-                MoviePoster(movie1)
+            items(movies) { movie ->
+                MoviePoster(movie = movie)
             }
         }
     }

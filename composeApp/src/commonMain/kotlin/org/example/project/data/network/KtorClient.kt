@@ -1,26 +1,28 @@
 package org.example.project.data.network
 
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.http.HttpHeaders
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.example.project.data.network.model.MoviesListResponse
 
+private const val BASE_URL = "https://api.themoviedb.org"
+const val IMAGE_SMALL_BASE_URL = "https://image.tmdb.org/t/p/w154"
 
-object KtorClient {
+private const val TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYmNkZjNjZTNmYjIzMDA0ZWE5YWY4ZDlhOTFiYjkzZiIsIm5iZiI6MTYyMjQ2NDc3NS41NjQsInN1YiI6IjYwYjRkOTA3Yzc0MGQ5MDA0MjRiYzJjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.DgqZVROyLGD_qgIjZPuRFl6xrxirz-mzLFVmcWOVbn0"
+object KtorApiClient {
 
     private val client = HttpClient {
-
+        expectSuccess = true
         install(ContentNegotiation) {
             json(
-                Json{
+                Json {
                     prettyPrint = true
                     isLenient = true
                     ignoreUnknownKeys = true
@@ -32,18 +34,24 @@ object KtorClient {
             bearer {
                 loadTokens {
                     BearerTokens(
-                        accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYmNkZjNjZTNmYjIzMDA0ZWE5YWY4ZDlhOTFiYjkzZiIsIm5iZiI6MTYyMjQ2NDc3NS41NjQsInN1YiI6IjYwYjRkOTA3Yzc0MGQ5MDA0MjRiYzJjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.DgqZVROyLGD_qgIjZPuRFl6xrxirz-mzLFVmcWOVbn0",
-                        refreshToken = ""
+                        accessToken = TOKEN,
+                        ""
                     )
                 }
             }
         }
 
         install(Logging) {
-            logger = Logger.SIMPLE
+            logger = Logger.DEFAULT
             level = LogLevel.ALL
             sanitizeHeader { header -> header == HttpHeaders.Authorization }
         }
+    }
 
+    suspend fun getMovies(category: String, language: String = "pt-BR"): MoviesListResponse {
+        return client.get("$BASE_URL/3/movie/$category") {
+            parameter("language", language)
+            parameter("page", 1)
+        }.body()
     }
 }

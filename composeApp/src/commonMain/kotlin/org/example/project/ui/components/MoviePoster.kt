@@ -1,6 +1,5 @@
 package org.example.project.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -14,10 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import movies.composeapp.generated.resources.Res
-import movies.composeapp.generated.resources.minecraft_movie
+import coil3.compose.AsyncImage
 import org.example.project.domain.model.Movie
-import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MoviePoster(
@@ -33,8 +31,8 @@ fun MoviePoster(
                 .height(210.dp),
             shape = RoundedCornerShape(12.dp),
         ) {
-            Image(
-                painter = painterResource(Res.drawable.minecraft_movie),
+            AsyncImage(
+                model = movie.posterUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -47,6 +45,21 @@ fun MoviePoster(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium
+        )
+    }
+}
+
+@Preview
+@Composable
+fun MoviePosterPreview() {
+    MaterialTheme {
+        MoviePoster(
+            movie = Movie(
+                id = 1,
+                title = "Movie Title",
+                overview = "This is a brief overview of the movie. It provides a summary of the plot and key elements.",
+                posterUrl = "https://via.placeholder.com/300x450.png?text=Movie+Poster"
+            )
         )
     }
 }
