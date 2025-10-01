@@ -7,13 +7,14 @@ import org.example.project.domain.model.toModel
 
 class MoviesRepository(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ktorClient: KtorApiClient
 ) {
 
     suspend fun getMovieSections(): List<MovieSection> {
         return withContext(ioDispatcher) {
-            val popularMoviesDeferred = async { KtorApiClient.getMovies("popular") }
-            val topRatedMoviesDeferred = async { KtorApiClient.getMovies("top_rated") }
-            val upcomingMoviesDeferred = async { KtorApiClient.getMovies("upcoming") }
+            val popularMoviesDeferred = async { ktorClient.getMovies("popular") }
+            val topRatedMoviesDeferred = async { ktorClient.getMovies("top_rated") }
+            val upcomingMoviesDeferred = async { ktorClient.getMovies("upcoming") }
 
             val popularMovies = popularMoviesDeferred.await()
             val topRatedMovies = topRatedMoviesDeferred.await()

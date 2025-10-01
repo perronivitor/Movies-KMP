@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,25 +11,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import org.example.project.data.repository.MoviesRepository
 import org.example.project.domain.model.MovieSection
 import org.example.project.domain.model.MovieSection.SectionType.*
 import org.example.project.domain.model.movie1
 import org.example.project.ui.components.MoviesSection
 import org.example.project.ui.movies.MoviesListViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MoviesListRoute(
-    viewModel: MoviesListViewModel = viewModel {
-        MoviesListViewModel(
-            moviesRepository = MoviesRepository()
-        )
-    }
+    viewModel: MoviesListViewModel = koinViewModel()
 ) {
     val moviesListState by viewModel.moviesListState.collectAsStateWithLifecycle()
-
 
     MoviesListScreen(moviesListState = moviesListState)
 }
@@ -60,12 +53,14 @@ fun MoviesListScreen(
                                         movies = movieSection.movies
                                     )
                                 }
+
                                 TOP_RATED -> {
                                     MoviesSection(
                                         title = "Top Rated Movies",
                                         movies = movieSection.movies
                                     )
                                 }
+
                                 UPCOMING -> {
                                     MoviesSection(
                                         title = "Upcoming Movies",
@@ -86,6 +81,7 @@ fun MoviesListScreen(
                         textAlign = TextAlign.Center,
                     )
                 }
+
                 MoviesListViewModel.MoviesListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
