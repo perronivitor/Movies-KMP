@@ -11,11 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import movies.composeapp.generated.resources.Res
+import movies.composeapp.generated.resources.movies_list_popular_movies
+import movies.composeapp.generated.resources.movies_list_top_rated_movies
+import movies.composeapp.generated.resources.movies_list_upcoming_movies
 import org.example.project.domain.model.MovieSection
 import org.example.project.domain.model.MovieSection.SectionType.*
 import org.example.project.domain.model.movie1
 import org.example.project.ui.components.MoviesSection
 import org.example.project.ui.movies.MoviesListViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -49,21 +54,21 @@ fun MoviesListScreen(
                             when (movieSection.section) {
                                 POPULAR -> {
                                     MoviesSection(
-                                        title = "Popular Movies",
+                                        title = stringResource(Res.string.movies_list_popular_movies),
                                         movies = movieSection.movies
                                     )
                                 }
 
                                 TOP_RATED -> {
                                     MoviesSection(
-                                        title = "Top Rated Movies",
+                                        title = stringResource(Res.string.movies_list_top_rated_movies),
                                         movies = movieSection.movies
                                     )
                                 }
 
                                 UPCOMING -> {
                                     MoviesSection(
-                                        title = "Upcoming Movies",
+                                        title = stringResource(Res.string.movies_list_upcoming_movies),
                                         movies = movieSection.movies
                                     )
                                 }
