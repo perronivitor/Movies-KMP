@@ -57,6 +57,8 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
             implementation(libs.koin.core)
+
+            implementation(libs.composeIcons.fontAwesome)
         }
 
         iosMain.dependencies {
