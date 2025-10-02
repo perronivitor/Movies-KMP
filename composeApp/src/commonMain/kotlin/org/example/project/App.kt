@@ -1,3 +1,4 @@
+package org.example.project
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -7,6 +8,7 @@ import org.example.project.di.dataModule
 import org.example.project.di.networkModule
 import org.example.project.di.viewModelModule
 import org.example.project.navigation.AppRoutes
+import org.example.project.ui.movies.MoviesListRoute
 import org.example.project.ui.theme.MoviesAppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
