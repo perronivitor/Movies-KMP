@@ -1,5 +1,6 @@
 package org.example.project.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -21,12 +22,16 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun MoviePoster(
     movie: Movie,
     modifier: Modifier = Modifier,
+    onMoviePosterClick: (movieId: Int) -> Unit,
 ) {
     Column(
-        modifier = modifier.width(180.dp),
+        modifier = modifier
+            .clickable { onMoviePosterClick(movie.id) }
+            .width(140.dp),
     ) {
         Card(
-            modifier = modifier.height(220.dp),
+            modifier = modifier
+                .height(220.dp),
             shape = RoundedCornerShape(12.dp),
         ) {
             AsyncImage(
@@ -52,12 +57,13 @@ fun MoviePoster(
 fun MoviePosterPreview() {
     MaterialTheme {
         MoviePoster(
+            onMoviePosterClick = {},
             movie = Movie(
                 id = 1,
                 title = "Movie Title",
                 overview = "This is a brief overview of the movie. It provides a summary of the plot and key elements.",
                 posterUrl = "https://via.placeholder.com/300x450.png?text=Movie+Poster"
-            )
+            ),
         )
     }
 }

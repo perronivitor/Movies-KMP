@@ -33,17 +33,22 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MoviesListRoute(
-    viewModel: MoviesListViewModel = koinViewModel()
+    moviesListViewModel: MoviesListViewModel = koinViewModel(),
+    navigateToMovieDetail: (movieId: Int) -> Unit,
 ) {
-    val moviesListState by viewModel.moviesListState.collectAsStateWithLifecycle()
+    val moviesListState by moviesListViewModel.moviesListState.collectAsStateWithLifecycle()
 
-    MoviesListScreen(moviesListState = moviesListState)
+    MoviesListScreen(
+        moviesListState = moviesListState,
+        onMovieClick = navigateToMovieDetail
+    )
 }
 
 @Composable
 @Preview
 fun MoviesListScreen(
     moviesListState: MoviesListViewModel.MoviesListState,
+    onMovieClick: (movieId: Int) -> Unit,
 ) {
     Scaffold { padding ->
         Box(
@@ -62,21 +67,24 @@ fun MoviesListScreen(
                                 POPULAR -> {
                                     MoviesSection(
                                         title = stringResource(Res.string.movies_list_popular_movies),
-                                        movies = movieSection.movies
+                                        movies = movieSection.movies,
+                                        onMoviePosterClick = onMovieClick
                                     )
                                 }
 
                                 TOP_RATED -> {
                                     MoviesSection(
                                         title = stringResource(Res.string.movies_list_top_rated_movies),
-                                        movies = movieSection.movies
+                                        movies = movieSection.movies,
+                                        onMoviePosterClick = onMovieClick
                                     )
                                 }
 
                                 UPCOMING -> {
                                     MoviesSection(
                                         title = stringResource(Res.string.movies_list_upcoming_movies),
-                                        movies = movieSection.movies
+                                        movies = movieSection.movies,
+                                        onMoviePosterClick = onMovieClick
                                     )
                                 }
                             }
@@ -109,6 +117,7 @@ fun MoviesListScreen(
 @Composable
 private fun MoviesListPreview() {
     MoviesListScreen(
+        onMovieClick = {},
         moviesListState = MoviesListViewModel.MoviesListState.Success(
             movieSections = listOf(
                 MovieSection(
@@ -116,6 +125,6 @@ private fun MoviesListPreview() {
                     movies = listOf(movie1)
                 )
             )
-        )
+        ),
     )
 }

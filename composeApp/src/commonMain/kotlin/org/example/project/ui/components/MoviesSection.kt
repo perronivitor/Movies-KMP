@@ -17,6 +17,7 @@ import org.example.project.domain.model.Movie
 fun MoviesSection(
     title: String,
     movies: List<Movie>,
+    onMoviePosterClick : (movieId:Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -36,7 +37,10 @@ fun MoviesSection(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             items(movies) { movie ->
-                MoviePoster(movie = movie)
+                MoviePoster(
+                    movie = movie,
+                    onMoviePosterClick = onMoviePosterClick
+                )
             }
         }
     }
