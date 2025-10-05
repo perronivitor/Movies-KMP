@@ -10,12 +10,16 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.example.project.data.network.model.CreditsListResponse
+import org.example.project.data.network.model.MovieResponse
 import org.example.project.data.network.model.MoviesListResponse
 
 private const val BASE_URL = "https://api.themoviedb.org"
 const val IMAGE_SMALL_BASE_URL = "https://image.tmdb.org/t/p/w154"
 
-private const val TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYmNkZjNjZTNmYjIzMDA0ZWE5YWY4ZDlhOTFiYjkzZiIsIm5iZiI6MTYyMjQ2NDc3NS41NjQsInN1YiI6IjYwYjRkOTA3Yzc0MGQ5MDA0MjRiYzJjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.DgqZVROyLGD_qgIjZPuRFl6xrxirz-mzLFVmcWOVbn0"
+private const val TOKEN =
+    "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYmNkZjNjZTNmYjIzMDA0ZWE5YWY4ZDlhOTFiYjkzZiIsIm5iZiI6MTYyMjQ2NDc3NS41NjQsInN1YiI6IjYwYjRkOTA3Yzc0MGQ5MDA0MjRiYzJjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.DgqZVROyLGD_qgIjZPuRFl6xrxirz-mzLFVmcWOVbn0"
+
 class KtorApiClient {
 
     private val client = HttpClient {
@@ -48,10 +52,25 @@ class KtorApiClient {
         }
     }
 
-    suspend fun getMovies(category: String, language: String = "pt-BR"): MoviesListResponse {
+    suspend fun getMovies(category: String): MoviesListResponse {
         return client.get("$BASE_URL/3/movie/$category") {
-            parameter("language", language)
-            parameter("page", 1)
+            this.addLanguageParam()
         }.body()
+    }
+
+    suspend fun getMovieDetail(id: Int): MovieResponse {
+        return client.get("$BASE_URL/3/movie/$id") {
+            this.addLanguageParam()
+        }.body()
+    }
+
+    suspend fun getCredits(movieId: Int): CreditsListResponse {
+        return client.get("$BASE_URL/3/movie/$movieId/credits") {
+            this.addLanguageParam()
+        }.body()
+    }
+
+    private fun HttpRequestBuilder.addLanguageParam(language: String = "pt-BR") {
+        parameter("language", language)
     }
 }

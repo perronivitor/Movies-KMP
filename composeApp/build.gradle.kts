@@ -58,6 +58,9 @@ kotlin {
             implementation(libs.koin.core)
 
             implementation(libs.composeIcons.fontAwesome)
+
+            implementation(libs.kotlinx.datetime)
+
         }
 
         iosMain.dependencies {
