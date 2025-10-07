@@ -62,7 +62,12 @@ fun MoviePosterPreview() {
                 id = 1,
                 title = "Movie Title",
                 overview = "This is a brief overview of the movie. It provides a summary of the plot and key elements.",
-                posterUrl = "https://via.placeholder.com/300x450.png?text=Movie+Poster"
+                posterUrl = "https://via.placeholder.com/300x450.png?text=Movie+Poster",
+                genres = null,
+                year = 2023,
+                duration = "2h 15min",
+                rating = "8.2",
+                castMembers = null,
             ),
         )
     }
