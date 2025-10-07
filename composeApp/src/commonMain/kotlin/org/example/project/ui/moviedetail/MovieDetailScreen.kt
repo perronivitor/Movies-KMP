@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +35,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.ArrowLeft
@@ -47,18 +50,28 @@ import org.example.project.domain.model.movie1
 import org.example.project.ui.components.CastMemberItem
 import org.example.project.ui.components.MovieGenreChip
 import org.example.project.ui.components.MovieInfoItem
+import org.example.project.ui.moviedetail.MovieDetailViewModel.MovieDetailState.Error
+import org.example.project.ui.moviedetail.MovieDetailViewModel.MovieDetailState.Loading
+import org.example.project.ui.moviedetail.MovieDetailViewModel.MovieDetailState.Success
 import org.example.project.ui.theme.MoviesAppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun MovieDetailRoute() {
-    MovieDetailScreen(movie1)
+fun MovieDetailRoute(
+    viewModel: MovieDetailViewModel = koinViewModel()
+) {
+    val movieDetailState by viewModel.movieDetailState.collectAsStateWithLifecycle()
+
+    MovieDetailScreen(movieDetailState)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieDetailScreen(movie: Movie) {
+fun MovieDetailScreen(
+    movieDetailState: MovieDetailViewModel.MovieDetailState,
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -93,134 +106,169 @@ fun MovieDetailScreen(movie: Movie) {
             )
         }
     ) { paddingValues ->
-        Column(
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center,
         ) {
-            Surface(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .weight(1f),
-                shape = MaterialTheme.shapes.large,
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.minecraft_movie),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.medium),
-                    contentScale = ContentScale.Crop,
-                )
-            }
+            when (movieDetailState) {
+                is Loading -> {
+                    CircularProgressIndicator()
+                }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(2f)
-                    .padding(top = 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = movie.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    MovieInfoItem(
-                        icon = FontAwesomeIcons.Solid.Star,
-                        text = "7.5"
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    MovieInfoItem(
-                        icon = FontAwesomeIcons.Solid.Clock,
-                        text = "2h 36 min"
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    MovieInfoItem(
-                        icon = FontAwesomeIcons.Solid.Calendar,
-                        text = "2022"
+                is Success -> {
+                    MovieDetailContent(
+                        movie = movieDetailState.movie,
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    MovieGenreChip(genre = "Action")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                ElevatedButton(
-                    onClick = {
-
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                ) {
-                    Icon(
-                        imageVector = FontAwesomeIcons.Solid.Play,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(12.dp)
-                    )
-
+                is Error -> {
                     Text(
-                        text = "Watch trailer",
-                        modifier = Modifier
-                            .padding(start = 16.dp),
-                        fontWeight = FontWeight.Medium,
+                        text = movieDetailState.message,
+                        color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
+            }
+        }
+    }
+}
 
-                Spacer(modifier = Modifier.height(16.dp))
+@Composable
+fun MovieDetailContent(
+    modifier: Modifier = Modifier,
+    movie: Movie,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize(),
+    ) {
+        Surface(
+            modifier = Modifier
+                .padding(16.dp)
+                .weight(1f),
+            shape = MaterialTheme.shapes.large,
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.minecraft_movie),
+                contentDescription = null,
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.medium),
+                contentScale = ContentScale.Crop,
+            )
+        }
 
-                BoxWithConstraints {
-                    val itemWidth = this.maxWidth * 0.55f
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(2f)
+                .padding(top = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = movie.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+            )
 
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        items(10) {
-                            CastMemberItem(
-                                profilePictureUrl = "",
-                                name = "Will Smith",
-                                character = "Christopher Gardner",
-                                modifier = Modifier
-                                    .width(itemWidth)
-                            )
-                        }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                MovieInfoItem(
+                    icon = FontAwesomeIcons.Solid.Star,
+                    text = "7.5"
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                MovieInfoItem(
+                    icon = FontAwesomeIcons.Solid.Clock,
+                    text = "2h 36 min"
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                MovieInfoItem(
+                    icon = FontAwesomeIcons.Solid.Calendar,
+                    text = "2022"
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                MovieGenreChip(
+                    genre = "Action"
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ElevatedButton(
+                onClick = {
+
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            ) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.Play,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(12.dp)
+                )
+
+                Text(
+                    text = "Watch trailer",
+                    modifier = Modifier
+                        .padding(start = 16.dp),
+                    fontWeight = FontWeight.Medium,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            BoxWithConstraints {
+                val itemWidth = this.maxWidth * 0.55f
+
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    items(10) {
+                        CastMemberItem(
+                            profilePictureUrl = "",
+                            name = "Will Smith",
+                            character = "Christopher Gardner",
+                            modifier = Modifier
+                                .width(itemWidth)
+                        )
                     }
                 }
+            }
 
-                Box(
-                    modifier = Modifier
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Trying to leave their troubled lives behind, twin brothers return to their hometown to start again, only to discover that an even greater evil is waiting to welcome them back.",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Trying to leave their troubled lives behind, twin brothers return to their hometown to start again, only to discover that an even greater evil is waiting to welcome them back.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
         }
     }
@@ -230,8 +278,6 @@ fun MovieDetailScreen(movie: Movie) {
 @Composable
 fun MoviesDetailScreenPreview() {
     MoviesAppTheme {
-        MovieDetailScreen(
-            movie = movie1,
-        )
+        MovieDetailScreen(movieDetailState = Success(movie1))
     }
 }
