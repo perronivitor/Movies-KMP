@@ -15,7 +15,7 @@ import org.example.project.data.network.model.MovieResponse
 import org.example.project.data.network.model.MoviesListResponse
 
 private const val BASE_URL = "https://api.themoviedb.org"
-const val IMAGE_SMALL_BASE_URL = "https://image.tmdb.org/t/p/w154"
+const val IMAGE_BASE_URL = "https://image.tmdb.org/t/p"
 
 private const val TOKEN =
     "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYmNkZjNjZTNmYjIzMDA0ZWE5YWY4ZDlhOTFiYjkzZiIsIm5iZiI6MTYyMjQ2NDc3NS41NjQsInN1YiI6IjYwYjRkOTA3Yzc0MGQ5MDA0MjRiYzJjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.DgqZVROyLGD_qgIjZPuRFl6xrxirz-mzLFVmcWOVbn0"

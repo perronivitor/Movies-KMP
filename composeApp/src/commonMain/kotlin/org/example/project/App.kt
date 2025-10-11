@@ -38,7 +38,9 @@ fun App() {
                 }
 
                 composable<AppRoutes.MovieDetail> {
-                    MovieDetailRoute()
+                    MovieDetailRoute(
+                        navigateBack = navController::popBackStack,
+                    )
                 }
             }
         }
